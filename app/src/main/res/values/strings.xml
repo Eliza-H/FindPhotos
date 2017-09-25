@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">FindPhotos</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_create_order">Create Order</string>
+    <string name="action_share">Share</string>
+    <string name="title_top">Top fragment</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="pizzas">
+        <item>Diavolo</item>
+        <item>Funghi</item>
+    </string-array>
+    <string-array name="stores">
+        <item>Lipowa 1, 20-400 Lublin</item><!--51.2508695,-22.5565953-->
+        <item>aleja Unii Lubelskiej 2, 20-108 Lublin</item><!--51.2505002,22.5734013-->
+        <item>Widok 26, 00-023 Warszawa</item><!--52.2440863,20.9304715-->
+        <item>plac Zamkowy 10, 00-001 Warszawa</item><!--52.2440449,20.9304715,12-->
+    </string-array>
+    <string-array name="titles">
+        <item>Home</item>
+        <item>Pizzas</item>
+        <item>Pasta</item>
+        <item>Stores</item>
+        <item>Drinks</item>
+        <item>Photos</item>
+    </string-array>
+    <string-array name="pastas"></string-array>
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
+    <string name="title_activity_main2">Main2Activity</string>
+</resources>
