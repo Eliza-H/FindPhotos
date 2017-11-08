@@ -60,7 +60,7 @@ public class FullScreenImageActivity extends AppCompatActivity {
 
     private void drawImage(String imagePath) {
         final ImageView imageView = (ImageView) findViewById(R.id.full_screen_id);
-//библиотека для рисования изображений
+
         Glide.with(this)
                 .load(new File(imagePath))
                 .apply(RequestOptions.placeholderOf(R.drawable.placeholder))

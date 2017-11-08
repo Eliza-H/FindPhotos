@@ -41,7 +41,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {//класс-шаблон в кот описуем как должен выглядеть элем списка
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_thumbnail, parent, false);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         layoutParams.height = layoutParams.width = itemWidth;
@@ -55,10 +55,9 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         final File image = images.get(position);
 
-        //библиотека для загрузки изображений
         RequestBuilder<Drawable> apply = Glide.with(activity)
                 .load(image)
-                .apply(RequestOptions.placeholderOf(R.drawable.placeholder))//картинка что изображение загружается
+                .apply(RequestOptions.placeholderOf(R.drawable.placeholder))
                 .apply(RequestOptions.overrideOf(itemWidth, itemWidth))
                 .apply(RequestOptions.centerCropTransform());
 
@@ -67,11 +66,11 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         holder.frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {//обработка клика на фото
+            public void onClick(View v) {
                 int adapterPos = holder.getAdapterPosition();
                 if (adapterPos != RecyclerView.NO_POSITION) {
                     final GalleryImageAction galleryImageAction = (GalleryImageAction) activity;
-                    galleryImageAction.selectImage(image.getPath());//перейти к фото активность
+                    galleryImageAction.selectImage(image.getPath());
                 }
             }
         });
@@ -89,7 +88,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             images.add(new File(image));
         }
 
-        notifyDataSetChanged();//уведомляет recycler view о изменениях
+        notifyDataSetChanged();
     }
 
     @Override
@@ -98,7 +97,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         images.clear();
     }
 
-    private int getItemWidth() {//расчитывает ширину на основе текущего экрана
+    private int getItemWidth() {
         final DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics.widthPixels / countPerLine;
@@ -113,7 +112,7 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         // endregion
 
         // region Constructors
-        public ImageViewHolder(final View view) {//создает элементы списка
+        public ImageViewHolder(final View view) {
             super(view);
 
             imageView = (ImageView) view.findViewById(R.id.iv);

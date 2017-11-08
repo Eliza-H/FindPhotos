@@ -47,9 +47,9 @@ public class PhotosActivity extends Activity implements GalleryImageAction {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_photos);
 
-        requestPlace();//идет асинхронно, в отдельном потоке
-        createImageList();//создает адаптер для recycler view
-        addRefreshLocationHandler();//возвращает к карте, новый выбор позиции
+        requestPlace();
+        createImageList();
+        addRefreshLocationHandler();
     }
 
     private void addRefreshLocationHandler() {
@@ -57,20 +57,20 @@ public class PhotosActivity extends Activity implements GalleryImageAction {
         clickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isBreak = true;//убить поток
+                isBreak = true;
                 if (imageLoadThread.isAlive()) {
-                    imageLoadThread.interrupt();//прервание потока как можно быстрее
+                    imageLoadThread.interrupt();
                 }
                 imageGalleryAdapter.clearImages();
                 selectLocation = null;
-                requestPlace();//покругу
+                requestPlace();
             }
         });
     }
 
     private void requestPlace() {
         int PLACE_PICKER_REQUEST = 1;
-        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();//стандартный интент андроида для геолокации, из гугл карт, запускает новую активность, выполняется паралельно
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
         try {
             startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
@@ -86,10 +86,10 @@ public class PhotosActivity extends Activity implements GalleryImageAction {
 
     private void createImageList() {
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));//выводит таблицей
-        final ImageGalleryAdapter adapter = new ImageGalleryAdapter(this);//создает наш адаптер
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        final ImageGalleryAdapter adapter = new ImageGalleryAdapter(this);
         this.imageGalleryAdapter = adapter;
-        recyclerView.setAdapter(adapter);//передаеться компоненту адаптер
+        recyclerView.setAdapter(adapter);
 
     }
 
@@ -97,16 +97,20 @@ public class PhotosActivity extends Activity implements GalleryImageAction {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PLACE_PICKER_REQUEST) {//проверяет вход интент
+        if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                final Place place = PlacePicker.getPlace(this, data);//получает координаты
+                final Place place = PlacePicker.getPlace(this, data);
                 selectLocation = new Location("");
-                selectLocation.setLatitude(place.getLatLng().latitude);//широта
-                selectLocation.setLongitude(place.getLatLng().longitude);//долгота
+                selectLocation.setLatitude(place.getLatLng().latitude);
+                selectLocation.setLongitude(place.getLatLng().longitude);
                 isBreak = false;
                 updateAdapter();
             }
         }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        updateAdapter();
     }
 
     private void updateAdapter() {
@@ -115,30 +119,31 @@ public class PhotosActivity extends Activity implements GalleryImageAction {
         int status = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE); //android 6 dynamic permission
         if (status == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            return;
         }
         final Activity activity = this;
 
         imageLoadThread = new Thread() {
             @Override
-            public void run() {//все что в run выполн в отдел потоке
+            public void run() {
                 try {
-                    ArrayList<String> images = new ArrayList<>();//список с картинками
-                    Cursor cursor = Utils.getImageCursor(activity);//подтягивает все картинки
+                    ArrayList<String> images = new ArrayList<>();
+                    Cursor cursor = Utils.getImageCursor(activity);
                     int column_index_data;
                     String image = null;
 
-                    column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);//тип который искать
+                    column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 
-                    while (cursor.moveToNext()) {//пока есть след картинки выполняется цыкл
-                        if (isBreak) {//если пользователь нажал назад, поток останавливаеться и удаляется, поток активен пока в нем чтото выполняется
+                    while (cursor.moveToNext()) {
+                        if (isBreak) {
                             break;
                         }
                         image = cursor.getString(column_index_data);
-                        if (image.endsWith("jpg") && Utils.isNeedLocation(image, selectLocation, 300)) {
+                        if (Utils.isImage(image) && Utils.isNeedLocation(image, selectLocation, 300)) {
                             images.add(image);
                             if (images.size() == 3) {
-                                Utils.addImagesToExtendList(activity, imageGalleryAdapter, images);//добвляет путь к картинке в адаптер
-                                images = new ArrayList<>();//новый список для новых изображ, так как потоки асинхронны и может еще этот метод не выполнился
+                                Utils.addImagesToExtendList(activity, imageGalleryAdapter, images);
+                                images = new ArrayList<>();
                             }
                         }
                     }
@@ -149,7 +154,7 @@ public class PhotosActivity extends Activity implements GalleryImageAction {
                 }
             }
         };
-        imageLoadThread.start();//запуск потока
+        imageLoadThread.start();
 
     }
 
